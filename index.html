@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CS 225 Lab Quiz</title>
+
+    <style type="text/css">
+        body {
+            color: black;
+            background: white;
+            margin-left: 10%;
+            margin-right: 10%;
+            margin-bottom: 2.5%;
+            font-family: Helvetica, Arial, sans-serif;
+            text-align: center;
+            height: 100%;
+        }
+        ul {
+            text-align: left;
+            font-size: 1.3em;
+            line-height: 1.5em;
+        }
+        h1 {
+            font-size: 2.5em;
+        }
+        h2 {
+            font-size: 2em;
+        }
+        h3 {
+            font-size: 5em;
+            margin: 0;
+        }
+        div#timerdiv{
+            margin-top: 3em;
+            margin-bottom: 3em;
+        }
+    </style>
+    <script>
+        var countdownID = -1;
+        var timeLeft = 15*60*1000;
+        var phase = 0;
+        function setClock() {
+            var time = new Date();
+            document.getElementById("clock").innerHTML = time.toLocaleTimeString();
+        }
+        function startTimer() {
+            if (phase == 0) {
+                countdownID = setInterval(tick, 500);
+                phase = 1;
+                updateText();
+                document.getElementById("pauseButton").innerText = PAUSE;
+            }
+        }
+        function tick() {
+            timeLeft -= 500;
+            document.getElementById("timer").innerText = getTimerString();
+            if (phase == 1 && timeLeft < (5*60*1000)) {
+                phase = 2;
+                updateText();
+            }
+        }
+        function pauseTimer() {
+            if (phase != 0 && countdownID != -1) {
+                clearInterval(countdownID);
+                document.getElementById("pauseButton").innerText = "RESUME";
+                document.getElementById("pauseButton").onclick = resumeTimer;
+            }
+        }
+        function resumeTimer() {
+            if (phase != 0) {
+                countdownID = setInterval(tick, 500);
+                document.getElementById("pauseButton").innerText = "PAUSE";
+                document.getElementById("pauseButton").onclick = pauseTimer;
+            }
+        }
+        function resetTimer() {
+            if (countdownID != -1) clearInterval(countdownID);
+            countdownID = -1;
+            timeLeft = 15*60*1000;
+            phase = 0;
+            document.getElementById("timer").innerText = getTimerString();
+            document.getElementById("pauseButton").innerText = "PAUSE";
+            updateText();
+        }
+        function getTimerString() {
+            var minutes = Math.floor(timeLeft/1000/60);
+            var seconds = Math.floor((timeLeft/1000)%60);
+            return (minutes>=10 ? minutes : ("0"+minutes)) + ":" + (seconds>=10 ? seconds : ("0"+seconds));
+        }
+        function updateText() {
+            if (phase == 0) {
+                document.getElementById("text").innerText = "Please wait for the quiz to begin";
+                document.getElementById("subtext").innerText = " ";
+            } else if (phase == 1) {
+                document.getElementById("text").innerText = "Computers may NOT be used yet";
+                document.getElementById("subtext").innerText = " ";
+            } else if (phase == 2) {
+                document.getElementById("text").innerText = "Computers may now be used to enter answers";
+                document.getElementById("subtext").innerText = "prairielearn.engr.illinois.edu";
+            }
+        }
+    </script>
+</head>
+<body onload="setInterval(setClock, 250); resetTimer();">
+    <div>
+        <button type="button" onclick="startTimer()">START</button>
+        <button type="button" id="pauseButton" onclick="pauseTimer()">PAUSE</button>
+        <button type="button" onclick="resetTimer()">RESET</button>
+    </div>
+    <h1>CS 225 Lab Quiz</h1>
+    <div id="clockdiv">
+        <h2>Current Time: <span id="clock"></span></h2>
+    </div>
+    <div id="timerdiv">
+        <h2>Remaining Time:</h2>
+        <h3 id="timer">00:00</h3>
+        <h2 id="text"></h2>
+        <h2 id="subtext"></h2>
+    </div>
+    <ul>
+        <li>All notes and electronics must be put away</li>
+        <li>Computers may not be used until the last 5 minutes of the quiz</li>
+        <li>Please have your I-Card visible on your desk</li>
+        <li>Quiz sheets will be collected after the time is up</li>
+        <li>If you are having trouble entering your answers on PrairieLearn, please inform a CA/TA</li>
+    </ul>
+</body>
+</html>
