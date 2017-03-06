@@ -77,16 +77,20 @@
     </style>
     <script>
         var countdownID = -1;
-        var timeLeft = 15*60*1000;
-        var phase = 0;
-        var timerState = 0;
+        var timeLeft = 0;
+        var phase = 0; // 0: not started, 1: >5 min left, 2: ≤5 min left, 3: time up
+        var timerState = 0; // 0: not started, 1: running, 2: paused, 3: time up
+        var TICK_INTERVAL = 500;
+        var TOTAL_TIME = 15*60*1000;
+        var PHASE_2_TIME = 5*60*1000;
         function setClock() {
             var time = new Date();
             document.getElementById("clock").innerHTML = time.toLocaleTimeString();
         }
         function timerControlButtonClicked() {
             if (timerState == 0) {
-              countdownID = setInterval(tick, 500);
+              resetTimer();
+              countdownID = setInterval(tick, TICK_INTERVAL);
               timerState = 1;
               phase = 1;
               updateText();
@@ -96,23 +100,30 @@
               timerState = 2;
               updateTimerControlButton();
             } else if (timerState == 2) {
-              countdownID = setInterval(tick, 500);
+              countdownID = setInterval(tick, TICK_INTERVAL);
               timerState = 1;
               updateTimerControlButton();
             }
         }
         function tick() {
             timeLeft -= 500;
-            document.getElementById("timer").innerText = getTimerString();
-            if (phase == 1 && timeLeft < (5*60*1000)) {
+            if (phase == 1 && timeLeft < PHASE_2_TIME) {
                 phase = 2;
                 updateText();
+            } else if (phase == 2 && timeLeft < 600) {
+                if (countdownID != -1) clearInterval(countdownID)
+                phase = 3;
+                timerState = 3;
+                timeLeft = 0;
+                updateText();
+                updateTimerControlButton();
             }
+            document.getElementById("timer").innerText = getTimerString();
         }
         function resetTimer() {
             if (countdownID != -1) clearInterval(countdownID);
             countdownID = -1;
-            timeLeft = 15*60*1000;
+            timeLeft = TOTAL_TIME;
             phase = 0;
             timerState = 0;
             document.getElementById("timer").innerText = getTimerString();
@@ -125,7 +136,7 @@
             return (minutes>=10 ? minutes : ("0"+minutes)) + ":" + (seconds>=10 ? seconds : ("0"+seconds));
         }
         function updateTimerControlButton() {
-          if (timerState == 0) {
+          if (timerState == 0 || timerState == 3) {
             document.getElementById("timerControlButton").innerText = "START";
             document.getElementById("timerControlButton").className = "button green"
           } else if (timerState == 1) {
@@ -146,6 +157,9 @@
             } else if (phase == 2) {
                 document.getElementById("text").innerText = "Computers may now be used to enter answers";
                 document.getElementById("subtext").innerText = "prairielearn.engr.illinois.edu";
+            } else if (phase == 3) {
+                document.getElementById("text").innerText = "Please wait while quiz sheets are collected";
+                document.getElementById("subtext").innerText = " ";
             }
         }
     </script>
