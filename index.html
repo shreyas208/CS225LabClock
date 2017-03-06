@@ -79,23 +79,25 @@
         var countdownID = -1;
         var timeLeft = 15*60*1000;
         var phase = 0;
+        var timerState = 0;
         function setClock() {
             var time = new Date();
             document.getElementById("clock").innerHTML = time.toLocaleTimeString();
         }
         function timerControlButtonClicked() {
-            if (phase == 0) {
+            if (timerState == 0) {
               countdownID = setInterval(tick, 500);
+              timerState = 1;
               phase = 1;
               updateText();
               updateTimerControlButton();
-            } else if (phase == 1) {
+            } else if (timerState == 1) {
               clearInterval(countdownID);
-              phase = 2;
+              timerState = 2;
               updateTimerControlButton();
-            } else if (phase == 2) {
+            } else if (timerState == 2) {
               countdownID = setInterval(tick, 500);
-              phase = 1;
+              timerState = 1;
               updateTimerControlButton();
             }
         }
@@ -112,6 +114,7 @@
             countdownID = -1;
             timeLeft = 15*60*1000;
             phase = 0;
+            timerState = 0;
             document.getElementById("timer").innerText = getTimerString();
             updateTimerControlButton();
             updateText();
@@ -122,13 +125,13 @@
             return (minutes>=10 ? minutes : ("0"+minutes)) + ":" + (seconds>=10 ? seconds : ("0"+seconds));
         }
         function updateTimerControlButton() {
-          if (phase == 0) {
+          if (timerState == 0) {
             document.getElementById("timerControlButton").innerText = "START";
             document.getElementById("timerControlButton").className = "button green"
-          } else if (phase == 1) {
+          } else if (timerState == 1) {
             document.getElementById("timerControlButton").innerText = "PAUSE";
             document.getElementById("timerControlButton").className = "button yellow"
-          } else if (phase == 2) {
+          } else if (timerState == 2) {
             document.getElementById("timerControlButton").innerText = "RESUME";
             document.getElementById("timerControlButton").className = "button green"
           }
