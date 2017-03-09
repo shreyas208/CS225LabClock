@@ -76,6 +76,14 @@
         .button.yellow:active {
             background-color: #FBC02D;
         }
+        .button.grey {
+            background-color: #E0E0E0;
+            color: black;
+        }
+        .button.grey:active {
+            background-color: #9E9E9E;
+            color: black;
+        }
     </style>
     <script>
         var countdownID = -1;
@@ -164,17 +172,41 @@
                 document.getElementById("subtext").innerText = " ";
             }
         }
-        function requestFullscreen() {
-            var html = document.getElementById("html");
-            if(html.requestFullscreen) {
-                html.requestFullscreen();
-            } else if(html.mozRequestFullScreen) {
-                html.mozRequestFullScreen();
-            } else if(html.webkitRequestFullscreen) {
-                html.webkitRequestFullscreen();
-            } else if(html.msRequestFullscreen) {
-                html.msRequestFullscreen();
+        function toggleFullscreen() {
+            if (isFullscreen()) {
+                exitFullscreen();
+            } else {
+                enterFullscreen();
             }
+        }
+        function enterFullscreen() {
+            var doc = document.documentElement;
+            if (doc.requestFullscreen) {
+                doc.requestFullscreen();
+            } else if(doc.mozRequestFullScreen) {
+                doc.mozRequestFullScreen();
+            } else if(doc.webkitRequestFullscreen) {
+                doc.webkitRequestFullscreen();
+            } else if(doc.msRequestFullscreen) {
+                doc.msRequestFullscreen();
+            }
+        }
+        function exitFullscreen() {
+            if(document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if(document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if(document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+        function isFullscreen() {
+            return (
+                document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement
+            );
         }
     </script>
 </head>
@@ -182,7 +214,7 @@
 <div>
     <button type="button" id="timerControlButton" class="button green" onclick="timerControlButtonClicked()">START</button>
     <button type="button" id="resetButton" class="button red" onclick="resetTimer()">RESET</button>
-    <button type="button" id="fullscreenButton" class="button green" onclick="requestFullscreen()">FULL SCREEN</button>
+    <button type="button" id="fullscreenButton" class="button grey" onclick="toggleFullscreen()">TOGGLE FULLSCREEN</button>
 </div>
 <h1>CS 225 Lab Quiz</h1>
 <div id="clockdiv">
